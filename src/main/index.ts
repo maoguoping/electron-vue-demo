@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, globalShortcut } from 'electron'
 import './dialog'
 import { Logger } from './logger'
 import { initialize } from './services'
@@ -8,7 +8,7 @@ import anotherPreload from '/@preload/another'
 import indexHtmlUrl from '/@renderer/index.html'
 import sideHtmlUrl from '/@renderer/side.html'
 import logoUrl from '/@static/logo.png'
-
+import { initUpdate } from './update'
 async function main() {
   const logger = new Logger()
   logger.initialize(app.getPath('userData'))
@@ -18,6 +18,10 @@ async function main() {
     const [x, y] = main.getPosition()
     const side = createSecondWindow()
     side.setPosition(x + 800 + 5, y)
+    initUpdate(main)
+    globalShortcut.register('CommandOrControl+K', function () {
+      main.webContents.openDevTools()
+    })
   })
   // thread_worker example
   createBaseWorker({ workerData: 'worker world' }).on('message', (message) => {
